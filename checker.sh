@@ -50,7 +50,7 @@ $CC -o "${PROJ_PATH}/${OUTPUT_DIR}/bin" "${PROJ_PATH}/${PROBLEM}/${SOL_FILE}" ||
 
 # verify the output
 for cs in $(find "${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/"\
-	-maxdepth 1 -iname 'in*.txt' -type f -printf '%f '); do
+	-maxdepth 1 -iname 'in*.txt' -type f -exec basename "{}" \;); do
 	op_n=$(echo $cs | sed 's/in\(.\)\.txt/\1/') # n as in nth test case
 
 	"${PROJ_PATH}/${OUTPUT_DIR}/bin" <"${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/in${op_n}.txt"\
