@@ -56,7 +56,7 @@ for cs in $(find "${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/"\
 	"${PROJ_PATH}/${OUTPUT_DIR}/bin" <"${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/in${op_n}.txt"\
 		>"${PROJ_PATH}/${OUTPUT_DIR}/op${op_n}.txt"
 
-	cat "${PROJ_PATH}/${OUTPUT_DIR}/op${op_n}.txt" | sha1sum | cut -d ' ' -f 1 |
+	cat "${PROJ_PATH}/${OUTPUT_DIR}/op${op_n}.txt" | shasum | cut -d ' ' -f 1 |
 		cmp -s -n 40 "${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/op${op_n}_hashed.txt" - &&
 		echo "test case ${op_n} passed" || echo "test case ${op_n} failed"
 done

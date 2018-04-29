@@ -37,7 +37,8 @@ The script should work on any POSIX compatible environment, but has been tested 
 
 The prerequisites (other than sh) are:
 
-- cat, mkdir, rm, sha1sum (GNU coreutils)
+- cat, mkdir, rm (GNU coreutils)
+- shasum (Perl)
 - find (GNU find)
 - cc (GCC, Clang/LLVM)
 
