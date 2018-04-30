@@ -3,15 +3,13 @@
 
 CC=cc
 VERSION="0.1"
-
-PROJ_PATH=$(pwd)
-SOL_FILE="solution.c"
-TESTCASE_DIR="tests"
-OUTPUT_DIR=output
-
 HELP_TEXT="Usage: $0 [-c CC ] [-d PATH] [-h] PROBLEM"
 
-PROBLEM=
+root_path="$(pwd)"
+solution_name="solution.c"
+tests_dirname="tests"
+output_dirname="output"
+problem_name=
 
 help() {
 	echo "$HELP_TEXT"
@@ -24,43 +22,51 @@ error_exit() {
 }
 
 while [ $# != 0 ]; do
-	case $1 in
+	case "$1" in
 		-h) help ;;
-		-c) CC=$2 ; shift ;;
-		-d) PROJ_PATH=$2 ; shift ;;
+		-c) CC="$2" ; shift ;;
+		-d) root_path="$2" ; shift ;;
 		-*) ;;
-		*) PROBLEM=$1 ;;
+		*) problem_name="$1" ;;
 	esac
 	shift
 done
 
-[ -z "$PROBLEM" ] && error_exit "no problem specified"
+[ -z "$problem_name" ] && error_exit "no problem specified"
+
+output_path="${root_path}/${output_dirname}"
+solution_path="${root_path}/${problem_name}/${solution_name}"
+testcase_path="${root_path}/${problem_name}/${tests_dirname}"
 
 # scratch directory
-if [ ! -d "${PROJ_PATH}/${OUTPUT_DIR}" ]; then
-	mkdir "${PROJ_PATH}/${OUTPUT_DIR}" ||
+if [ ! -d "$output_path" ]; then
+	mkdir "$output_path" ||
 		error_exit "directory creation failed"
 fi
-find "${PROJ_PATH}/${OUTPUT_DIR}/" -maxdepth 1 -type f -delete ||
+find "$output_path" -maxdepth 1 -type f -delete ||
 	error_exit "directory operation failed"
 
 # build the source
-$CC -o "${PROJ_PATH}/${OUTPUT_DIR}/bin" "${PROJ_PATH}/${PROBLEM}/${SOL_FILE}" ||
+$CC -o "${output_path}/bin" "$solution_path" ||
 	error_exit "compilation failed"
 
 # verify the output
-for cs in $(find "${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/"\
-	-maxdepth 1 -iname 'in*.txt' -type f -exec basename "{}" \;); do
-	op_n=$(echo $cs | sed 's/in\(.\)\.txt/\1/') # n as in nth test case
+for cs in $(find "$testcase_path" -maxdepth 1 -iname 'in*.txt'\
+	-type f -exec basename "{}" \;)
+do
+	# extract n, n as in nth testcase
+	op_n=$(echo $cs | sed 's/in\(.\)\.txt/\1/')
 
-	"${PROJ_PATH}/${OUTPUT_DIR}/bin" <"${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/in${op_n}.txt"\
-		>"${PROJ_PATH}/${OUTPUT_DIR}/op${op_n}.txt"
+	"${output_path}/bin" <"${testcase_path}/in${op_n}.txt"\
+		>"${output_path}/op${op_n}.txt"
 
-	cat "${PROJ_PATH}/${OUTPUT_DIR}/op${op_n}.txt" | shasum | cut -d ' ' -f 1 |
-		cmp -s -n 40 "${PROJ_PATH}/${PROBLEM}/${TESTCASE_DIR}/op${op_n}_hashed.txt" - &&
+	# extract first 40 chars from shasum output, then compare (cmp)
+	# byte-by-byte the first 40 bytes
+	cat "${output_path}/op${op_n}.txt" | shasum | cut -d ' ' -f 1 |
+		cmp -s -n 40 "${testcase_path}/op${op_n}_hashed.txt" - &&
 		echo "test case ${op_n} passed" || echo "test case ${op_n} failed"
 done
 
 # cleanup
-rm -r "${PROJ_PATH}/${OUTPUT_DIR}/" ||
+rm -r "$output_path" ||
        error_exit "directory operation failed"	
