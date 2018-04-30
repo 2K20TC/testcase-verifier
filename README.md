@@ -50,6 +50,8 @@ The prerequisites (other than sh) are:
 
 - `-c CC` denotes the compiler to use. By default, it is set to `cc`, which should work in most cases.
 
+- `-s SOLUTION_NAME` is used to set the name of the solution source file within a problem. By default, this is `solution.c`.
+
 - `-d PATH` denotes the project path. By default, it is set to the current directory. Use this option if the script is being invoked from outside the project directory.
 
 - `-h` to display help contents.

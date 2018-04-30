@@ -3,7 +3,7 @@
 
 CC=cc
 VERSION="0.1"
-HELP_TEXT="Usage: $0 [-c CC ] [-d PATH] [-h] PROBLEM"
+HELP_TEXT="Usage: $0 [-c CC ] [ -s SOLUTION_NAME ] [-d PATH] [-h] PROBLEM"
 
 root_path="$(pwd)"
 solution_name="solution.c"
@@ -26,6 +26,7 @@ while [ $# != 0 ]; do
 		-h) help ;;
 		-c) CC="$2" ; shift ;;
 		-d) root_path="$2" ; shift ;;
+		-s) solution_name="$2" ; shift ;;
 		-*) ;;
 		*) problem_name="$1" ;;
 	esac
